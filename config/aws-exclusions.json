@@ -1,0 +1,68 @@
+{
+  "description": "AWS EC2 exclusions for Linux CIS L1 benchmarks",
+  "skip": [
+    {
+      "id": "1.4.1",
+      "reason": "Bootloader password — no physical/console access on EC2"
+    },
+    {
+      "id": "1.4.2",
+      "reason": "Bootloader password — no physical/console access on EC2"
+    },
+    {
+      "id": "3.1.1",
+      "reason": "Wireless interfaces — no hardware on EC2"
+    },
+    {
+      "id": "3.1.2",
+      "reason": "Bluetooth — no hardware on EC2"
+    },
+    {
+      "id": "1.8.1",
+      "reason": "GDM — headless EC2 servers"
+    },
+    {
+      "id": "1.8.2",
+      "reason": "GDM — headless EC2 servers"
+    },
+    {
+      "id": "1.8.3",
+      "reason": "GDM — headless EC2 servers"
+    },
+    {
+      "id": "1.8.4",
+      "reason": "GDM — headless EC2 servers"
+    },
+    {
+      "id": "1.8.5",
+      "reason": "GDM — headless EC2 servers"
+    },
+    {
+      "id": "1.8.6",
+      "reason": "GDM — headless EC2 servers"
+    },
+    {
+      "id": "1.8.7",
+      "reason": "GDM — headless EC2 servers"
+    },
+    {
+      "id": "1.8.8",
+      "reason": "GDM — headless EC2 servers"
+    },
+    {
+      "id": "1.8.9",
+      "reason": "GDM — headless EC2 servers"
+    },
+    {
+      "id": "1.8.10",
+      "reason": "GDM — headless EC2 servers"
+    }
+  ],
+  "modify": {
+    "5.1.5": {
+      "field": "expected",
+      "value": "prohibit-password",
+      "reason": "SSH root login with key-based auth OK on EC2 (no password auth)"
+    }
+  }
+}

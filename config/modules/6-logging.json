@@ -1,0 +1,323 @@
+{
+  "section": "6",
+  "title": "Logging and Auditing",
+  "description": "AIDE, journald, rsyslog, auditd rules",
+  "controls": [
+    {
+      "id": "6.1.1",
+      "title": "Ensure AIDE is installed",
+      "type": "package",
+      "package": "aide",
+      "expected": "installed"
+    },
+    {
+      "id": "6.1.2",
+      "title": "Ensure filesystem integrity is regularly checked",
+      "type": "command",
+      "audit_cmd": "systemctl is-enabled aidecheck.timer 2>/dev/null || crontab -l 2>/dev/null | grep aide",
+      "match": "not_empty"
+    },
+    {
+      "id": "6.2.1.1",
+      "title": "Ensure journald service is enabled and active",
+      "type": "service",
+      "service": "systemd-journald",
+      "expected": "active"
+    },
+    {
+      "id": "6.2.1.2",
+      "title": "Ensure journald is configured to compress large log files",
+      "type": "file-content",
+      "file": "/etc/systemd/journald.conf",
+      "directive": "Compress",
+      "expected": "yes",
+      "separator": "="
+    },
+    {
+      "id": "6.2.1.3",
+      "title": "Ensure journald is configured to write logfiles to persistent disk",
+      "type": "file-content",
+      "file": "/etc/systemd/journald.conf",
+      "directive": "Storage",
+      "expected": "persistent",
+      "separator": "="
+    },
+    {
+      "id": "6.2.1.4",
+      "title": "Ensure journald is not configured to send logs to rsyslog",
+      "type": "command",
+      "audit_cmd": "grep -E '^\\s*ForwardToSyslog' /etc/systemd/journald.conf 2>/dev/null",
+      "expected": "no",
+      "match": "contains"
+    },
+    {
+      "id": "6.2.2.1",
+      "title": "Ensure rsyslog is installed",
+      "type": "package",
+      "package": "rsyslog",
+      "expected": "installed"
+    },
+    {
+      "id": "6.2.2.2",
+      "title": "Ensure rsyslog service is enabled and active",
+      "type": "service",
+      "service": "rsyslog",
+      "expected": "enabled"
+    },
+    {
+      "id": "6.2.2.3",
+      "title": "Ensure journald is configured to send logs to rsyslog",
+      "type": "file-content",
+      "file": "/etc/systemd/journald.conf",
+      "directive": "ForwardToSyslog",
+      "expected": "yes",
+      "separator": "="
+    },
+    {
+      "id": "6.2.2.4",
+      "title": "Ensure rsyslog default file permissions are configured",
+      "type": "file-content",
+      "file": "/etc/rsyslog.conf",
+      "directive": "$FileCreateMode",
+      "expected": "0640"
+    },
+    {
+      "id": "6.2.2.5",
+      "title": "Ensure logging is configured",
+      "type": "command",
+      "audit_cmd": "grep -E '^[^#]' /etc/rsyslog.conf /etc/rsyslog.d/*.conf 2>/dev/null | grep -c '/'",
+      "match": "not_empty"
+    },
+    {
+      "id": "6.2.2.6",
+      "title": "Ensure rsyslog is configured to send logs to a remote log host",
+      "type": "command",
+      "audit_cmd": "grep -E '^\\s*([^#]+\\s+)?@@?' /etc/rsyslog.conf /etc/rsyslog.d/*.conf 2>/dev/null",
+      "match": "not_empty"
+    },
+    {
+      "id": "6.2.2.7",
+      "title": "Ensure rsyslog is not configured to receive logs from a remote client",
+      "type": "command",
+      "audit_cmd": "grep -E '^\\s*module\\(load=\"imtcp\"\\)|^\\s*input\\(type=\"imtcp\"\\)' /etc/rsyslog.conf /etc/rsyslog.d/*.conf 2>/dev/null",
+      "match": "empty"
+    },
+    {
+      "id": "6.3.1.1",
+      "title": "Ensure auditd is installed",
+      "type": "package",
+      "package": "audit",
+      "expected": "installed",
+      "distro_only": "rhel9"
+    },
+    {
+      "id": "6.3.1.1",
+      "title": "Ensure auditd is installed",
+      "type": "package",
+      "package": "auditd",
+      "expected": "installed",
+      "distro_only": "ubuntu2404"
+    },
+    {
+      "id": "6.3.1.2",
+      "title": "Ensure auditd service is enabled and active",
+      "type": "service",
+      "service": "auditd",
+      "expected": "enabled"
+    },
+    {
+      "id": "6.3.1.3",
+      "title": "Ensure auditing for processes that start prior to auditd is enabled",
+      "type": "command",
+      "audit_cmd": "grep -E 'audit=1' /etc/default/grub",
+      "match": "not_empty"
+    },
+    {
+      "id": "6.3.1.4",
+      "title": "Ensure audit_backlog_limit is sufficient",
+      "type": "command",
+      "audit_cmd": "grep -E 'audit_backlog_limit=' /etc/default/grub",
+      "expected": "audit_backlog_limit=",
+      "match": "contains"
+    },
+    {
+      "id": "6.3.2.1",
+      "title": "Ensure audit log storage size is configured",
+      "type": "file-content",
+      "file": "/etc/audit/auditd.conf",
+      "directive": "max_log_file",
+      "expected": "8",
+      "separator": " = "
+    },
+    {
+      "id": "6.3.2.2",
+      "title": "Ensure audit logs are not automatically deleted",
+      "type": "file-content",
+      "file": "/etc/audit/auditd.conf",
+      "directive": "max_log_file_action",
+      "expected": "keep_logs",
+      "separator": " = "
+    },
+    {
+      "id": "6.3.2.3",
+      "title": "Ensure system is disabled when audit logs are full",
+      "type": "file-content",
+      "file": "/etc/audit/auditd.conf",
+      "directive": "space_left_action",
+      "expected": "email",
+      "separator": " = "
+    },
+    {
+      "id": "6.3.2.4",
+      "title": "Ensure system is disabled when audit logs are full - action_mail_acct",
+      "type": "file-content",
+      "file": "/etc/audit/auditd.conf",
+      "directive": "action_mail_acct",
+      "expected": "root",
+      "separator": " = "
+    },
+    {
+      "id": "6.3.2.5",
+      "title": "Ensure system is disabled when audit logs are full - admin_space_left_action",
+      "type": "file-content",
+      "file": "/etc/audit/auditd.conf",
+      "directive": "admin_space_left_action",
+      "expected": "halt",
+      "separator": " = "
+    },
+    {
+      "id": "6.3.3.1",
+      "title": "Ensure changes to system administration scope are collected",
+      "type": "auditd-rule",
+      "rule": "-w /etc/sudoers -p wa -k scope",
+      "match_pattern": "/etc/sudoers.*scope"
+    },
+    {
+      "id": "6.3.3.2",
+      "title": "Ensure actions as another user are always logged",
+      "type": "auditd-rule",
+      "rule": "-a always,exit -F arch=b64 -C euid!=uid -F auid!=unset -S execve -k user_emulation",
+      "match_pattern": "user_emulation"
+    },
+    {
+      "id": "6.3.3.3",
+      "title": "Ensure events that modify the sudo log file are collected",
+      "type": "auditd-rule",
+      "rule": "-w /var/log/sudo.log -p wa -k sudo_log",
+      "match_pattern": "sudo_log"
+    },
+    {
+      "id": "6.3.3.4",
+      "title": "Ensure events that modify date and time information are collected",
+      "type": "auditd-rule",
+      "rule": "-a always,exit -F arch=b64 -S adjtimex,settimeofday,clock_settime -k time-change",
+      "match_pattern": "time-change"
+    },
+    {
+      "id": "6.3.3.5",
+      "title": "Ensure events that modify the system's network environment are collected",
+      "type": "auditd-rule",
+      "rule": "-a always,exit -F arch=b64 -S sethostname,setdomainname -k system-locale",
+      "match_pattern": "system-locale"
+    },
+    {
+      "id": "6.3.3.6",
+      "title": "Ensure use of privileged commands are collected",
+      "type": "command",
+      "audit_cmd": "find / -xdev \\( -perm -4000 -o -perm -2000 \\) -type f 2>/dev/null | head -5",
+      "match": "not_empty"
+    },
+    {
+      "id": "6.3.3.7",
+      "title": "Ensure unsuccessful file access attempts are collected",
+      "type": "auditd-rule",
+      "rule": "-a always,exit -F arch=b64 -S open,truncate,ftruncate,creat,openat -F exit=-EACCES -k access",
+      "match_pattern": "access"
+    },
+    {
+      "id": "6.3.3.8",
+      "title": "Ensure events that modify user/group information are collected",
+      "type": "auditd-rule",
+      "rule": "-w /etc/group -p wa -k identity",
+      "match_pattern": "/etc/group.*identity"
+    },
+    {
+      "id": "6.3.3.9",
+      "title": "Ensure discretionary access control permission modification events are collected",
+      "type": "auditd-rule",
+      "rule": "-a always,exit -F arch=b64 -S chmod,fchmod,fchmodat -k perm_mod",
+      "match_pattern": "perm_mod"
+    },
+    {
+      "id": "6.3.3.10",
+      "title": "Ensure successful file system mounts are collected",
+      "type": "auditd-rule",
+      "rule": "-a always,exit -F arch=b64 -S mount -k mounts",
+      "match_pattern": "mounts"
+    },
+    {
+      "id": "6.3.3.11",
+      "title": "Ensure session initiation information is collected",
+      "type": "auditd-rule",
+      "rule": "-w /var/run/utmp -p wa -k session",
+      "match_pattern": "utmp.*session"
+    },
+    {
+      "id": "6.3.3.12",
+      "title": "Ensure login and logout events are collected",
+      "type": "auditd-rule",
+      "rule": "-w /var/log/lastlog -p wa -k logins",
+      "match_pattern": "lastlog.*logins"
+    },
+    {
+      "id": "6.3.3.13",
+      "title": "Ensure file deletion events by users are collected",
+      "type": "auditd-rule",
+      "rule": "-a always,exit -F arch=b64 -S rename,unlink,unlinkat,renameat -k delete",
+      "match_pattern": "delete"
+    },
+    {
+      "id": "6.3.3.14",
+      "title": "Ensure events that modify the system's MAC are collected",
+      "type": "auditd-rule",
+      "rule": "-w /etc/selinux -p wa -k MAC-policy",
+      "match_pattern": "MAC-policy"
+    },
+    {
+      "id": "6.3.3.15",
+      "title": "Ensure successful and unsuccessful attempts to use the chcon command are collected",
+      "type": "auditd-rule",
+      "rule": "-a always,exit -F path=/usr/bin/chcon -F perm=x -k perm_chng",
+      "match_pattern": "chcon.*perm_chng"
+    },
+    {
+      "id": "6.3.3.16",
+      "title": "Ensure kernel module loading unloading and modification is collected",
+      "type": "auditd-rule",
+      "rule": "-a always,exit -F arch=b64 -S init_module,finit_module,delete_module -k kernel_modules",
+      "match_pattern": "kernel_modules"
+    },
+    {
+      "id": "6.3.3.17",
+      "title": "Ensure the audit configuration is immutable",
+      "type": "auditd-rule",
+      "rule": "-e 2",
+      "match_pattern": "^-e 2"
+    },
+    {
+      "id": "6.4.1",
+      "title": "Ensure permissions on /var/log/ files are appropriate",
+      "type": "command",
+      "audit_cmd": "find /var/log -type f -perm /037 2>/dev/null | head -5",
+      "match": "empty"
+    },
+    {
+      "id": "6.4.2",
+      "title": "Ensure permissions on all logfiles are configured",
+      "type": "command",
+      "audit_cmd": "find /var/log -type f -perm /077 ! -name '*.journal' 2>/dev/null | wc -l",
+      "expected": "0",
+      "match": "exact"
+    }
+  ]
+}

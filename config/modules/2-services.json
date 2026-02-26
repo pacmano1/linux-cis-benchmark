@@ -1,0 +1,271 @@
+{
+  "section": "2",
+  "title": "Services",
+  "description": "Server and client services, time synchronization, cron",
+  "controls": [
+    {
+      "id": "2.1.1",
+      "title": "Ensure autofs services are not in use",
+      "type": "service",
+      "service": "autofs",
+      "expected": "disabled"
+    },
+    {
+      "id": "2.1.2",
+      "title": "Ensure avahi daemon services are not in use",
+      "type": "service",
+      "service": "avahi-daemon",
+      "expected": "disabled"
+    },
+    {
+      "id": "2.1.3",
+      "title": "Ensure dhcp server services are not in use",
+      "type": "service",
+      "service": "dhcpd",
+      "expected": "disabled",
+      "distro": {
+        "ubuntu2404": { "service": "isc-dhcp-server" }
+      }
+    },
+    {
+      "id": "2.1.4",
+      "title": "Ensure dns server services are not in use",
+      "type": "service",
+      "service": "named",
+      "expected": "disabled",
+      "distro": {
+        "ubuntu2404": { "service": "bind9" }
+      }
+    },
+    {
+      "id": "2.1.5",
+      "title": "Ensure dnsmasq services are not in use",
+      "type": "service",
+      "service": "dnsmasq",
+      "expected": "disabled"
+    },
+    {
+      "id": "2.1.6",
+      "title": "Ensure ftp server services are not in use",
+      "type": "service",
+      "service": "vsftpd",
+      "expected": "disabled"
+    },
+    {
+      "id": "2.1.7",
+      "title": "Ensure ldap server services are not in use",
+      "type": "service",
+      "service": "slapd",
+      "expected": "disabled"
+    },
+    {
+      "id": "2.1.8",
+      "title": "Ensure message access server services are not in use",
+      "type": "package",
+      "package": "dovecot-core",
+      "expected": "not_installed",
+      "distro": {
+        "rhel9": { "package": "cyrus-imapd" }
+      }
+    },
+    {
+      "id": "2.1.9",
+      "title": "Ensure network file system services are not in use",
+      "type": "service",
+      "service": "nfs-server",
+      "expected": "disabled"
+    },
+    {
+      "id": "2.1.10",
+      "title": "Ensure nis server services are not in use",
+      "type": "package",
+      "package": "ypserv",
+      "expected": "not_installed"
+    },
+    {
+      "id": "2.1.11",
+      "title": "Ensure print server services are not in use",
+      "type": "service",
+      "service": "cups",
+      "expected": "disabled"
+    },
+    {
+      "id": "2.1.12",
+      "title": "Ensure rpcbind services are not in use",
+      "type": "service",
+      "service": "rpcbind",
+      "expected": "disabled"
+    },
+    {
+      "id": "2.1.13",
+      "title": "Ensure rsync services are not in use",
+      "type": "service",
+      "service": "rsyncd",
+      "expected": "disabled",
+      "distro": {
+        "ubuntu2404": { "service": "rsync" }
+      }
+    },
+    {
+      "id": "2.1.14",
+      "title": "Ensure samba file server services are not in use",
+      "type": "service",
+      "service": "smb",
+      "expected": "disabled",
+      "distro": {
+        "ubuntu2404": { "service": "smbd" }
+      }
+    },
+    {
+      "id": "2.1.15",
+      "title": "Ensure snmp services are not in use",
+      "type": "service",
+      "service": "snmpd",
+      "expected": "disabled"
+    },
+    {
+      "id": "2.1.16",
+      "title": "Ensure telnet server services are not in use",
+      "type": "package",
+      "package": "telnet-server",
+      "expected": "not_installed"
+    },
+    {
+      "id": "2.1.17",
+      "title": "Ensure tftp server services are not in use",
+      "type": "package",
+      "package": "tftp-server",
+      "expected": "not_installed"
+    },
+    {
+      "id": "2.1.18",
+      "title": "Ensure web proxy server services are not in use",
+      "type": "service",
+      "service": "squid",
+      "expected": "disabled"
+    },
+    {
+      "id": "2.1.19",
+      "title": "Ensure web server services are not in use",
+      "type": "service",
+      "service": "httpd",
+      "expected": "disabled",
+      "distro": {
+        "ubuntu2404": { "service": "apache2" }
+      }
+    },
+    {
+      "id": "2.1.20",
+      "title": "Ensure xinetd services are not in use",
+      "type": "package",
+      "package": "xinetd",
+      "expected": "not_installed"
+    },
+    {
+      "id": "2.1.21",
+      "title": "Ensure mail transfer agent is configured for local-only mode",
+      "type": "command",
+      "audit_cmd": "ss -lntu | grep ':25\\b'",
+      "expected": "127.0.0.1",
+      "match": "contains"
+    },
+    {
+      "id": "2.2.1",
+      "title": "Ensure nis client is not installed",
+      "type": "package",
+      "package": "ypbind",
+      "expected": "not_installed"
+    },
+    {
+      "id": "2.2.2",
+      "title": "Ensure rsh client is not installed",
+      "type": "package",
+      "package": "rsh",
+      "expected": "not_installed"
+    },
+    {
+      "id": "2.2.3",
+      "title": "Ensure talk client is not installed",
+      "type": "package",
+      "package": "talk",
+      "expected": "not_installed"
+    },
+    {
+      "id": "2.2.4",
+      "title": "Ensure telnet client is not installed",
+      "type": "package",
+      "package": "telnet",
+      "expected": "not_installed"
+    },
+    {
+      "id": "2.2.5",
+      "title": "Ensure ldap client is not installed",
+      "type": "package",
+      "package": "openldap-clients",
+      "expected": "not_installed",
+      "distro": {
+        "ubuntu2404": { "package": "ldap-utils" }
+      }
+    },
+    {
+      "id": "2.2.6",
+      "title": "Ensure ftp client is not installed",
+      "type": "package",
+      "package": "ftp",
+      "expected": "not_installed"
+    },
+    {
+      "id": "2.3.1",
+      "title": "Ensure time synchronization is in use",
+      "type": "service",
+      "service": "chronyd",
+      "expected": "enabled",
+      "distro_only": "rhel9"
+    },
+    {
+      "id": "2.3.1",
+      "title": "Ensure time synchronization is in use",
+      "type": "command",
+      "audit_cmd": "systemctl is-active chrony || systemctl is-active systemd-timesyncd",
+      "expected": "active",
+      "match": "contains",
+      "distro_only": "ubuntu2404"
+    },
+    {
+      "id": "2.3.2",
+      "title": "Ensure chrony is configured",
+      "type": "file-content",
+      "file": "/etc/chrony.conf",
+      "directive": "server",
+      "expected": ".",
+      "match": "regex"
+    },
+    {
+      "id": "2.3.3",
+      "title": "Ensure chrony is not run as the root user",
+      "type": "command",
+      "audit_cmd": "grep -E '^user' /etc/chrony.conf",
+      "expected": "user",
+      "match": "contains"
+    },
+    {
+      "id": "2.4.1",
+      "title": "Ensure cron daemon is enabled and active",
+      "type": "service",
+      "service": "crond",
+      "expected": "enabled",
+      "distro": {
+        "ubuntu2404": { "service": "cron" }
+      }
+    },
+    {
+      "id": "2.4.2",
+      "title": "Ensure permissions on /etc/crontab are configured",
+      "type": "file-perms",
+      "path": "/etc/crontab",
+      "mode": "600",
+      "owner": "root",
+      "group": "root"
+    }
+  ]
+}

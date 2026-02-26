@@ -1,0 +1,6 @@
+reports/
+backups/
+*.log
+.DS_Store
+tests/test_helper/bats-support/
+tests/test_helper/bats-assert/

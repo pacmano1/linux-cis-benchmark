@@ -1,0 +1,219 @@
+{
+  "section": "3",
+  "title": "Network Configuration",
+  "description": "Network kernel modules and sysctl parameters",
+  "controls": [
+    {
+      "id": "3.1.1",
+      "title": "Ensure IPv6 status is identified",
+      "type": "command",
+      "audit_cmd": "sysctl net.ipv6.conf.all.disable_ipv6",
+      "expected": "net.ipv6.conf.all.disable_ipv6 = 0",
+      "match": "contains"
+    },
+    {
+      "id": "3.1.2",
+      "title": "Ensure wireless interfaces are disabled",
+      "type": "command",
+      "audit_cmd": "nmcli radio wifi",
+      "expected": "disabled",
+      "match": "contains"
+    },
+    {
+      "id": "3.1.3",
+      "title": "Ensure bluetooth services are not in use",
+      "type": "service",
+      "service": "bluetooth",
+      "expected": "disabled"
+    },
+    {
+      "id": "3.2.1",
+      "title": "Ensure dccp kernel module is not available",
+      "type": "kernel-module",
+      "module": "dccp",
+      "action": "disable"
+    },
+    {
+      "id": "3.2.2",
+      "title": "Ensure tipc kernel module is not available",
+      "type": "kernel-module",
+      "module": "tipc",
+      "action": "disable"
+    },
+    {
+      "id": "3.2.3",
+      "title": "Ensure rds kernel module is not available",
+      "type": "kernel-module",
+      "module": "rds",
+      "action": "disable"
+    },
+    {
+      "id": "3.2.4",
+      "title": "Ensure sctp kernel module is not available",
+      "type": "kernel-module",
+      "module": "sctp",
+      "action": "disable"
+    },
+    {
+      "id": "3.3.1a",
+      "title": "Ensure ip forwarding is disabled - net.ipv4.ip_forward",
+      "type": "sysctl",
+      "key": "net.ipv4.ip_forward",
+      "expected": "0"
+    },
+    {
+      "id": "3.3.1b",
+      "title": "Ensure ip forwarding is disabled - net.ipv6.conf.all.forwarding",
+      "type": "sysctl",
+      "key": "net.ipv6.conf.all.forwarding",
+      "expected": "0"
+    },
+    {
+      "id": "3.3.2a",
+      "title": "Ensure packet redirect sending is disabled - net.ipv4.conf.all.send_redirects",
+      "type": "sysctl",
+      "key": "net.ipv4.conf.all.send_redirects",
+      "expected": "0"
+    },
+    {
+      "id": "3.3.2b",
+      "title": "Ensure packet redirect sending is disabled - net.ipv4.conf.default.send_redirects",
+      "type": "sysctl",
+      "key": "net.ipv4.conf.default.send_redirects",
+      "expected": "0"
+    },
+    {
+      "id": "3.3.3",
+      "title": "Ensure bogus ICMP responses are ignored",
+      "type": "sysctl",
+      "key": "net.ipv4.icmp_ignore_bogus_error_responses",
+      "expected": "1"
+    },
+    {
+      "id": "3.3.4",
+      "title": "Ensure broadcast ICMP requests are ignored",
+      "type": "sysctl",
+      "key": "net.ipv4.icmp_echo_ignore_broadcasts",
+      "expected": "1"
+    },
+    {
+      "id": "3.3.5a",
+      "title": "Ensure ICMP redirects are not accepted - net.ipv4.conf.all.accept_redirects",
+      "type": "sysctl",
+      "key": "net.ipv4.conf.all.accept_redirects",
+      "expected": "0"
+    },
+    {
+      "id": "3.3.5b",
+      "title": "Ensure ICMP redirects are not accepted - net.ipv4.conf.default.accept_redirects",
+      "type": "sysctl",
+      "key": "net.ipv4.conf.default.accept_redirects",
+      "expected": "0"
+    },
+    {
+      "id": "3.3.5c",
+      "title": "Ensure ICMP redirects are not accepted - net.ipv6.conf.all.accept_redirects",
+      "type": "sysctl",
+      "key": "net.ipv6.conf.all.accept_redirects",
+      "expected": "0"
+    },
+    {
+      "id": "3.3.5d",
+      "title": "Ensure ICMP redirects are not accepted - net.ipv6.conf.default.accept_redirects",
+      "type": "sysctl",
+      "key": "net.ipv6.conf.default.accept_redirects",
+      "expected": "0"
+    },
+    {
+      "id": "3.3.6a",
+      "title": "Ensure secure ICMP redirects are not accepted - net.ipv4.conf.all.secure_redirects",
+      "type": "sysctl",
+      "key": "net.ipv4.conf.all.secure_redirects",
+      "expected": "0"
+    },
+    {
+      "id": "3.3.6b",
+      "title": "Ensure secure ICMP redirects are not accepted - net.ipv4.conf.default.secure_redirects",
+      "type": "sysctl",
+      "key": "net.ipv4.conf.default.secure_redirects",
+      "expected": "0"
+    },
+    {
+      "id": "3.3.7a",
+      "title": "Ensure Reverse Path Filtering is enabled - net.ipv4.conf.all.rp_filter",
+      "type": "sysctl",
+      "key": "net.ipv4.conf.all.rp_filter",
+      "expected": "1"
+    },
+    {
+      "id": "3.3.7b",
+      "title": "Ensure Reverse Path Filtering is enabled - net.ipv4.conf.default.rp_filter",
+      "type": "sysctl",
+      "key": "net.ipv4.conf.default.rp_filter",
+      "expected": "1"
+    },
+    {
+      "id": "3.3.8a",
+      "title": "Ensure source routed packets are not accepted - net.ipv4.conf.all.accept_source_route",
+      "type": "sysctl",
+      "key": "net.ipv4.conf.all.accept_source_route",
+      "expected": "0"
+    },
+    {
+      "id": "3.3.8b",
+      "title": "Ensure source routed packets are not accepted - net.ipv4.conf.default.accept_source_route",
+      "type": "sysctl",
+      "key": "net.ipv4.conf.default.accept_source_route",
+      "expected": "0"
+    },
+    {
+      "id": "3.3.8c",
+      "title": "Ensure source routed packets are not accepted - net.ipv6.conf.all.accept_source_route",
+      "type": "sysctl",
+      "key": "net.ipv6.conf.all.accept_source_route",
+      "expected": "0"
+    },
+    {
+      "id": "3.3.8d",
+      "title": "Ensure source routed packets are not accepted - net.ipv6.conf.default.accept_source_route",
+      "type": "sysctl",
+      "key": "net.ipv6.conf.default.accept_source_route",
+      "expected": "0"
+    },
+    {
+      "id": "3.3.9a",
+      "title": "Ensure suspicious packets are logged - net.ipv4.conf.all.log_martians",
+      "type": "sysctl",
+      "key": "net.ipv4.conf.all.log_martians",
+      "expected": "1"
+    },
+    {
+      "id": "3.3.9b",
+      "title": "Ensure suspicious packets are logged - net.ipv4.conf.default.log_martians",
+      "type": "sysctl",
+      "key": "net.ipv4.conf.default.log_martians",
+      "expected": "1"
+    },
+    {
+      "id": "3.3.10",
+      "title": "Ensure TCP SYN Cookies is enabled",
+      "type": "sysctl",
+      "key": "net.ipv4.tcp_syncookies",
+      "expected": "1"
+    },
+    {
+      "id": "3.3.11a",
+      "title": "Ensure IPv6 router advertisements are not accepted - net.ipv6.conf.all.accept_ra",
+      "type": "sysctl",
+      "key": "net.ipv6.conf.all.accept_ra",
+      "expected": "0"
+    },
+    {
+      "id": "3.3.11b",
+      "title": "Ensure IPv6 router advertisements are not accepted - net.ipv6.conf.default.accept_ra",
+      "type": "sysctl",
+      "key": "net.ipv6.conf.default.accept_ra",
+      "expected": "0"
+    }
+  ]
+}

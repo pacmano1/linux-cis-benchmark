@@ -1,0 +1,198 @@
+{
+  "section": "7",
+  "title": "System Maintenance",
+  "description": "File permissions, user/group validation",
+  "controls": [
+    {
+      "id": "7.1.1",
+      "title": "Ensure permissions on /etc/passwd are configured",
+      "type": "file-perms",
+      "path": "/etc/passwd",
+      "mode": "644",
+      "owner": "root",
+      "group": "root"
+    },
+    {
+      "id": "7.1.2",
+      "title": "Ensure permissions on /etc/passwd- are configured",
+      "type": "file-perms",
+      "path": "/etc/passwd-",
+      "mode": "644",
+      "owner": "root",
+      "group": "root"
+    },
+    {
+      "id": "7.1.3",
+      "title": "Ensure permissions on /etc/group are configured",
+      "type": "file-perms",
+      "path": "/etc/group",
+      "mode": "644",
+      "owner": "root",
+      "group": "root"
+    },
+    {
+      "id": "7.1.4",
+      "title": "Ensure permissions on /etc/group- are configured",
+      "type": "file-perms",
+      "path": "/etc/group-",
+      "mode": "644",
+      "owner": "root",
+      "group": "root"
+    },
+    {
+      "id": "7.1.5",
+      "title": "Ensure permissions on /etc/shadow are configured",
+      "type": "file-perms",
+      "path": "/etc/shadow",
+      "mode": "640",
+      "owner": "root",
+      "group": "root"
+    },
+    {
+      "id": "7.1.6",
+      "title": "Ensure permissions on /etc/shadow- are configured",
+      "type": "file-perms",
+      "path": "/etc/shadow-",
+      "mode": "640",
+      "owner": "root",
+      "group": "root"
+    },
+    {
+      "id": "7.1.7",
+      "title": "Ensure permissions on /etc/gshadow are configured",
+      "type": "file-perms",
+      "path": "/etc/gshadow",
+      "mode": "640",
+      "owner": "root",
+      "group": "root"
+    },
+    {
+      "id": "7.1.8",
+      "title": "Ensure permissions on /etc/gshadow- are configured",
+      "type": "file-perms",
+      "path": "/etc/gshadow-",
+      "mode": "640",
+      "owner": "root",
+      "group": "root"
+    },
+    {
+      "id": "7.1.9",
+      "title": "Ensure no world writable files exist",
+      "type": "command",
+      "audit_cmd": "find / -xdev -type f -perm -0002 2>/dev/null | head -20",
+      "match": "empty"
+    },
+    {
+      "id": "7.1.10",
+      "title": "Ensure no unowned files or directories exist",
+      "type": "command",
+      "audit_cmd": "find / -xdev -nouser 2>/dev/null | head -20",
+      "match": "empty"
+    },
+    {
+      "id": "7.1.11",
+      "title": "Ensure no ungrouped files or directories exist",
+      "type": "command",
+      "audit_cmd": "find / -xdev -nogroup 2>/dev/null | head -20",
+      "match": "empty"
+    },
+    {
+      "id": "7.1.12",
+      "title": "Ensure sticky bit is set on all world-writable directories",
+      "type": "command",
+      "audit_cmd": "find / -xdev -type d \\( -perm -0002 -a ! -perm -1000 \\) 2>/dev/null | head -20",
+      "match": "empty"
+    },
+    {
+      "id": "7.1.13",
+      "title": "Ensure SUID executables are reviewed",
+      "type": "command",
+      "audit_cmd": "find / -xdev -type f -perm -4000 2>/dev/null | wc -l",
+      "match": "not_empty"
+    },
+    {
+      "id": "7.1.14",
+      "title": "Ensure SGID executables are reviewed",
+      "type": "command",
+      "audit_cmd": "find / -xdev -type f -perm -2000 2>/dev/null | wc -l",
+      "match": "not_empty"
+    },
+    {
+      "id": "7.2.1",
+      "title": "Ensure accounts in /etc/passwd use shadowed passwords",
+      "type": "command",
+      "audit_cmd": "awk -F: '($2 != \"x\" ) { print $1 }' /etc/passwd",
+      "match": "empty"
+    },
+    {
+      "id": "7.2.2",
+      "title": "Ensure /etc/shadow password fields are not empty",
+      "type": "command",
+      "audit_cmd": "awk -F: '($2 == \"\" ) { print $1 }' /etc/shadow",
+      "match": "empty"
+    },
+    {
+      "id": "7.2.3",
+      "title": "Ensure all groups in /etc/passwd exist in /etc/group",
+      "type": "command",
+      "audit_cmd": "for gid in $(awk -F: '{print $4}' /etc/passwd | sort -u); do grep -q \":${gid}:\" /etc/group || echo \"GID $gid not in /etc/group\"; done",
+      "match": "empty"
+    },
+    {
+      "id": "7.2.4",
+      "title": "Ensure no duplicate UIDs exist",
+      "type": "command",
+      "audit_cmd": "awk -F: '{print $3}' /etc/passwd | sort -n | uniq -d",
+      "match": "empty"
+    },
+    {
+      "id": "7.2.5",
+      "title": "Ensure no duplicate GIDs exist",
+      "type": "command",
+      "audit_cmd": "awk -F: '{print $3}' /etc/group | sort -n | uniq -d",
+      "match": "empty"
+    },
+    {
+      "id": "7.2.6",
+      "title": "Ensure no duplicate user names exist",
+      "type": "command",
+      "audit_cmd": "awk -F: '{print $1}' /etc/passwd | sort | uniq -d",
+      "match": "empty"
+    },
+    {
+      "id": "7.2.7",
+      "title": "Ensure no duplicate group names exist",
+      "type": "command",
+      "audit_cmd": "awk -F: '{print $1}' /etc/group | sort | uniq -d",
+      "match": "empty"
+    },
+    {
+      "id": "7.2.8",
+      "title": "Ensure root PATH integrity",
+      "type": "command",
+      "audit_cmd": "echo \"$PATH\" | tr ':' '\\n' | grep -E '^\\.$|^$' | head -5",
+      "match": "empty"
+    },
+    {
+      "id": "7.2.9",
+      "title": "Ensure root is the only UID 0 account",
+      "type": "command",
+      "audit_cmd": "awk -F: '$3 == 0 && $1 != \"root\" { print $1 }' /etc/passwd",
+      "match": "empty"
+    },
+    {
+      "id": "7.2.10",
+      "title": "Ensure local interactive user home directories are configured",
+      "type": "command",
+      "audit_cmd": "awk -F: '($3 >= 1000 && $7 != \"/sbin/nologin\" && $7 != \"/usr/sbin/nologin\" && $7 != \"/bin/false\") { print $1 \":\" $6 }' /etc/passwd | while IFS=: read user dir; do [ ! -d \"$dir\" ] && echo \"$user: $dir missing\"; done",
+      "match": "empty"
+    },
+    {
+      "id": "7.2.11",
+      "title": "Ensure local interactive user dot files access is configured",
+      "type": "command",
+      "audit_cmd": "awk -F: '($3 >= 1000 && $7 != \"/sbin/nologin\" && $7 != \"/usr/sbin/nologin\" && $7 != \"/bin/false\") { print $6 }' /etc/passwd | while read dir; do find \"$dir\" -maxdepth 1 -name '.*' -perm /077 2>/dev/null; done | head -20",
+      "match": "empty"
+    }
+  ]
+}
