@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 ## Project Overview
-CIS Benchmark L1 automation for Linux (RHEL 9 + Ubuntu 24.04 LTS). Bash-based, modular architecture with 264 controls across 7 modules. Supports multi-distro with auto-detection, AWS EC2 awareness, DryRun by default.
+CIS Benchmark L1 automation for Linux (RHEL 9 + Ubuntu 24.04 LTS). Bash-based, modular architecture with 264 controls across 7 modules. Supports multi-distro with auto-detection, AWS EC2 awareness. Safe by default: DryRun mode + 29 dangerous controls are audit-only.
 
 ## Repository Structure
 ```
@@ -53,15 +53,30 @@ handler_${type}_apply "$control_json"    # apply mode
 - `--skip-gdm` skips GDM controls without prompting
 
 ### Exclusion Mechanism
-- `aws-exclusions.json` → `skip` array + `modify` object
+- `aws-exclusions.json` → `skip` array (19 controls) + `modify` object (3 controls)
 - `lib/core/config.sh` loads exclusions into `_SKIP_IDS` / `_MODIFY_JSON`
 - `resolve_control()` in utils.sh checks skip/distro/mods before dispatch
 - GDM exclusions are dynamic/opt-in via `--skip-gdm` flag
+- AWS skips: bootloader password, GDM, wireless/bluetooth, NFS/rpcbind (EFS), IPv6 RA, NOPASSWD sudo
+- AWS mods: PermitRootLogin→prohibit-password, INACTIVE→180d, audit halt→suspend
+
+### Audit-Only Controls
+29 controls have `"audit_only": true` in JSON — audited but never applied unless `--apply-all` is passed:
+- **2.1.1–2.1.21** (all server services): servers exist to run services
+- **4.1.4, 4.1.5** (firewalld enable + drop zone): drops all traffic including SSH
+- **4.2.3, 4.2.5** (ufw enable + default deny): blocks all inbound including SSH
+- **5.1.4** (sshd AllowUsers/DenyUsers): misconfigured = SSH lockout
+- **5.3.3** (PAM faillock even_deny_root): locks root after 5 bad passwords
+- **5.4.4** (INACTIVE=30): locks automation accounts after 30 days
+- **6.3.2.5** (auditd admin_space_left_action=halt): system halts when audit logs fill
+
+Logic lives in `dispatch_apply()` in `lib/modules/module-dispatch.sh` — checks `audit_only` field, runs audit handler instead of apply handler. `APPLY_ALL=true` (from `--apply-all` flag) overrides.
 
 ### Apply Modes
 - **DryRun** (default): logs what would change, no modifications
 - **Live** (`--dry-run false`): creates backup first, then applies
 - Post-apply audit only runs in live mode
+- Audit-only controls are always reported (run audit handler) but never applied without `--apply-all`
 
 ### NDJSON Result Stream
 Each audit/apply result is one JSON line:
