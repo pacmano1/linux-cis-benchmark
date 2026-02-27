@@ -56,6 +56,24 @@ Check for:
 jq -r 'select(.status == "Skip") | "\(.id): \(.detail)"' reports/results_*.ndjson
 ```
 
+### Apply not changing certain controls
+
+29 controls are marked **audit-only** and will not be applied unless you pass `--apply-all`. This is by design — these controls can disable services, enable firewalls without rules (SSH lockout), lock accounts, or halt the system.
+
+During apply, audit-only controls still run their audit handler so you see Pass/Fail in the report, but the apply step is skipped.
+
+```bash
+# See which controls are audit-only
+for f in config/modules/*.json; do
+    jq -r '.controls[] | select(.audit_only == true) | "\(.id): \(.title)"' "$f"
+done
+
+# Force apply everything (dangerous!)
+sudo ./scripts/cis-apply.sh --dry-run false --apply-all
+```
+
+See [Apply Guide — Audit-Only Controls](Usage-Apply.md#audit-only-controls) for the full list and rationale.
+
 ### Apply changes not taking effect
 
 Some changes require additional steps:

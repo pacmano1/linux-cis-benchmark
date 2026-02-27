@@ -13,20 +13,37 @@ Override with `AWS_MODE` in `master.conf`:
 
 ## Skipped Controls on EC2
 
-These controls are in `config/aws-exclusions.json` and are automatically skipped:
+These controls are in `config/aws-exclusions.json` and are automatically skipped (19 total):
 
 | Control | Reason |
 |---------|--------|
 | 1.4.1, 1.4.2 | Bootloader password — no physical/console access on EC2 |
+| 1.8.1–1.8.10 | GDM desktop — headless EC2 servers |
+| 2.1.9 | NFS server — required for EFS mounts |
+| 2.1.12 | rpcbind — required for EFS/NFS |
 | 3.1.1 | Wireless interfaces — no hardware |
 | 3.1.2 | Bluetooth — no hardware |
-| 1.8.1–1.8.10 | GDM desktop — headless EC2 servers |
+| 3.3.11a, 3.3.11b | IPv6 router advertisements — required for dual-stack/IPv6 networking |
+| 5.2.4 | NOPASSWD sudo — ec2-user/ubuntu default sudo requires NOPASSWD for cloud-init and SSM |
 
 ## Modified Controls on EC2
 
 | Control | Modification | Reason |
 |---------|-------------|--------|
-| 5.1.21 | PermitRootLogin changed from `no` to `prohibit-password` | Key-based root SSH is standard on EC2 (no password auth) |
+| 5.1.21 | PermitRootLogin: `no` → `prohibit-password` | Key-based root SSH is standard on EC2 (no password auth) |
+| 5.4.4 | INACTIVE: `30` → `180` days | EC2 automation accounts may not have interactive logins for months |
+| 6.3.2.5 | admin_space_left_action: `halt` → `suspend` | Halting an EC2 instance when audit logs fill up is a self-inflicted DOS |
+
+## Audit-Only Controls on EC2
+
+In addition to skips and modifications, 29 controls are marked **audit-only** — they are reported but never applied by `cis-apply.sh` unless `--apply-all` is explicitly passed. This prevents the apply script from bricking an EC2 instance by:
+
+- Disabling services the server intentionally runs (Samba, HTTP, NFS, DNS, etc.)
+- Enabling firewalld/ufw with a drop/deny policy and no allow rules (SSH lockout)
+- Locking out accounts via PAM faillock on root
+- Halting the system when audit logs fill up
+
+See [Apply Guide — Audit-Only Controls](Usage-Apply.md#audit-only-controls) for the full list.
 
 ## SSM Agent Considerations
 

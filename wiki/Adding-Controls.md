@@ -37,7 +37,24 @@ Edit the appropriate file in `config/modules/`. Add an entry to the `controls` a
 
 That's it. The framework will automatically dispatch to `handler_sysctl_audit` and `handler_sysctl_apply`.
 
-### 3. Distro-specific controls
+### 3. Audit-only controls
+
+For controls that could break a running system (disabling services, enabling firewalls, locking accounts), add `"audit_only": true`. These controls will be reported during apply but never actually applied unless `--apply-all` is passed:
+
+```json
+{
+  "id": "2.1.14",
+  "title": "Ensure samba file server services are not in use",
+  "type": "service",
+  "service": "smb",
+  "expected": "disabled",
+  "audit_only": true
+}
+```
+
+See [Apply Guide — Audit-Only Controls](Usage-Apply.md#audit-only-controls) for the full list.
+
+### 4. Distro-specific controls
 
 For controls that only apply to one distro:
 

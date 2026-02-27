@@ -6,7 +6,7 @@
 2. **Handler dispatch** — Controls declare a `type`; the framework calls the matching handler function automatically.
 3. **Distro abstraction** — Distro-specific operations go through adapter functions, not `if/else` in handlers.
 4. **NDJSON streaming** — Each result is one JSON line, composable with standard Unix tools.
-5. **Safe by default** — DryRun mode, interactive prompts, backups before changes.
+5. **Safe by default** — DryRun mode, interactive prompts, backups before changes, audit-only controls for dangerous operations.
 
 ## Directory Layout
 
@@ -86,7 +86,9 @@ cis-audit.sh
 Same as audit but:
 1. Prompts for mode (dry-run/live) and confirmation
 2. Creates backup before live apply
-3. Calls `handler_${type}_apply` instead of `_audit`
+3. For each control:
+   - If `audit_only: true` (and `--apply-all` not set): runs the audit handler only (reports status, does not apply)
+   - Otherwise: calls `handler_${type}_apply`
 4. Runs post-apply audit in live mode
 
 ## Handler Dispatch
@@ -150,6 +152,7 @@ Handlers call these functions instead of distro-specific commands directly.
 Optional fields:
 - `distro_only` — Only run on this distro (`"rhel9"` or `"ubuntu2404"`)
 - `distro` — Per-distro field overrides: `{"ubuntu2404": {"service": "cron"}}`
+- `audit_only` — If `true`, apply mode runs the audit handler instead of apply (safety mechanism)
 
 ## NDJSON Result Format
 

@@ -48,8 +48,10 @@
 
 ## 2. Services (33 controls)
 
-### 2.1 Server Services (21 controls)
+### 2.1 Server Services (21 controls) — audit-only
 Ensure unnecessary server services are disabled: autofs, avahi, dhcp, dns, dnsmasq, ftp, ldap, mail (IMAP), NFS, NIS, CUPS, rpcbind, rsync, samba, snmp, telnet, tftp, squid, httpd/apache, xinetd, MTA local-only.
+
+**All 21 controls are audit-only** — they are reported but never applied by `cis-apply.sh` unless `--apply-all` is passed. Servers exist to run services; blindly disabling them breaks things.
 
 Distro overrides for service names (e.g., `dhcpd` vs `isc-dhcp-server`, `httpd` vs `apache2`).
 
@@ -81,9 +83,11 @@ sysctl hardening: IP forwarding, ICMP redirects, source routing, SYN cookies, re
 
 ### 4.1 RHEL 9 — firewalld (7 controls)
 - firewalld installed, iptables-services removed, nftables removed, service enabled, default zone set to `drop`, interfaces assigned, unnecessary services dropped
+- **4.1.4 (enable) and 4.1.5 (drop zone) are audit-only** — enabling firewalld with a `drop` zone and no allow rules drops all traffic including SSH
 
 ### 4.2 Ubuntu 24.04 — ufw (7 controls)
 - ufw installed, iptables-persistent removed, service enabled, rules exist, default deny policy, loopback configured, outbound configured
+- **4.2.3 (enable) and 4.2.5 (default deny) are audit-only** — enabling ufw with default deny and no SSH rule = instant lockout
 
 ### 4.3 nftables (1 control)
 - Base filter chains exist

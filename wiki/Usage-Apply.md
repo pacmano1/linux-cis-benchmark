@@ -41,7 +41,49 @@ The script will:
 | `--skip-gdm` | Skip GDM desktop controls |
 | `--modules 1,3,5` | Apply specific modules only |
 | `--harden-firewall` | Enable firewall hardening without prompting |
+| `--apply-all` | Override audit-only safety controls (see below) |
 | `--log-level DEBUG` | Verbose logging |
+
+## Audit-Only Controls
+
+Some controls are marked as **audit-only** — they are reported during apply but never actually applied unless you explicitly pass `--apply-all`. This prevents the apply script from accidentally:
+
+- **Disabling services** that your server intentionally runs (Samba, HTTP, NFS, DNS, etc.)
+- **Enabling a firewall** with a drop/deny default policy and no rules (instant SSH lockout)
+- **Locking out accounts** via PAM faillock on root, or inactive password expiration
+- **Halting the system** when audit logs fill up
+
+### Which Controls Are Audit-Only?
+
+| Controls | Category | Why |
+|----------|----------|-----|
+| 2.1.1–2.1.21 | Server services | Servers exist to run services — don't blindly disable Samba, HTTP, DNS, NFS, etc. |
+| 4.1.4, 4.1.5 | firewalld enable + drop zone | Enabling firewalld with `drop` zone and no allow rules = all traffic dropped |
+| 4.2.3, 4.2.5 | ufw enable + default deny | Enabling ufw with default deny and no SSH rule = SSH lockout |
+| 5.1.4 | sshd AllowUsers/DenyUsers | Misconfigured access lists = SSH lockout |
+| 5.3.3 | PAM faillock even_deny_root | Locks root account after 5 failed password attempts |
+| 5.4.4 | Inactive password lock (30 days) | Locks ec2-user/ubuntu after 30 days of no interactive login |
+| 6.3.2.5 | auditd admin_space_left_action=halt | System halts when audit logs fill disk — self-inflicted DOS |
+
+### Behavior During Apply
+
+- **Without `--apply-all`**: Audit-only controls run their **audit** handler (so you see Pass/Fail in the report) but skip the apply step. No changes are made to these controls.
+- **With `--apply-all`**: All controls are applied, including audit-only ones. Use with extreme caution.
+
+### In JSON Configs
+
+Controls are marked with `"audit_only": true`:
+
+```json
+{
+  "id": "2.1.14",
+  "title": "Ensure samba file server services are not in use",
+  "type": "service",
+  "service": "smb",
+  "expected": "disabled",
+  "audit_only": true
+}
+```
 
 ## Examples
 
@@ -57,6 +99,9 @@ sudo ./scripts/cis-apply.sh --force --dry-run false --skip-gdm
 
 # Dry run with verbose output
 sudo ./scripts/cis-apply.sh --log-level DEBUG
+
+# Apply EVERYTHING including audit-only controls (dangerous!)
+sudo ./scripts/cis-apply.sh --dry-run false --apply-all
 ```
 
 ## What Each Handler Applies
