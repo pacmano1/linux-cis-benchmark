@@ -31,7 +31,8 @@
       "title": "Ensure firewalld service is enabled and running",
       "type": "firewall",
       "check_type": "active",
-      "distro_only": "rhel9"
+      "distro_only": "rhel9",
+      "audit_only": true
     },
     {
       "id": "4.1.5",
@@ -39,7 +40,8 @@
       "type": "firewall",
       "check_type": "default_zone",
       "expected": "drop",
-      "distro_only": "rhel9"
+      "distro_only": "rhel9",
+      "audit_only": true
     },
     {
       "id": "4.1.6",
@@ -80,7 +82,8 @@
       "type": "service",
       "service": "ufw",
       "expected": "enabled",
-      "distro_only": "ubuntu2404"
+      "distro_only": "ubuntu2404",
+      "audit_only": true
     },
     {
       "id": "4.2.4",
@@ -97,7 +100,8 @@
       "type": "firewall",
       "check_type": "default_policy",
       "expected": "deny",
-      "distro_only": "ubuntu2404"
+      "distro_only": "ubuntu2404",
+      "audit_only": true
     },
     {
       "id": "4.2.6",

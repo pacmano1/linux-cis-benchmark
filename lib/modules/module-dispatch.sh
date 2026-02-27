@@ -53,6 +53,11 @@ dispatch_audit() {
 
 # Process all controls in a module config for apply
 # Usage: dispatch_apply "config_file.json"
+#
+# Controls with "audit_only": true are only audited (reported), never applied.
+# This protects against accidentally disabling services, enabling firewalls
+# without rules, locking out accounts, etc.
+# Override with APPLY_ALL=true (--apply-all flag).
 dispatch_apply() {
     local config_file="$1"
 
@@ -78,6 +83,25 @@ dispatch_apply() {
         handler_type="$(ctl_field "$resolved" "type")"
 
         if [[ -z "$handler_type" ]]; then
+            continue
+        fi
+
+        # Check audit_only flag — run audit instead of apply unless overridden
+        local audit_only
+        audit_only="$(ctl_field "$resolved" "audit_only")"
+        if [[ "$audit_only" == "true" && "${APPLY_ALL:-false}" != "true" ]]; then
+            local ctl_id ctl_title
+            ctl_id="$(ctl_field "$resolved" "id")"
+            ctl_title="$(ctl_field "$resolved" "title")"
+            log_debug "Control $ctl_id is audit-only (use --apply-all to override)"
+
+            # Run the audit handler so the control is still reported
+            local audit_func="handler_${handler_type//-/_}_audit"
+            if declare -f "$audit_func" &>/dev/null; then
+                "$audit_func" "$resolved"
+            else
+                emit_result "$ctl_id" "$ctl_title" "Skip" "" "" "Audit-only (no audit handler)"
+            fi
             continue
         fi
 

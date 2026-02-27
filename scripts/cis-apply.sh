@@ -8,6 +8,7 @@
 #   --skip-gdm           Skip GDM desktop controls
 #   --modules LIST       Comma-separated module numbers (e.g., 1,3,5)
 #   --harden-firewall    Enable firewall rule hardening
+#   --apply-all          Override audit-only controls (services, firewall, etc.)
 #   --log-level LEVEL    Set log level (DEBUG, INFO, WARN, ERROR)
 #   --help               Show this help
 
@@ -20,6 +21,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SELECTED_MODULES=()
 SKIP_GDM=false
 HARDEN_FIREWALL=false
+APPLY_ALL=false
 DRY_RUN_SET=false
 
 while [[ $# -gt 0 ]]; do
@@ -43,6 +45,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --harden-firewall)
             HARDEN_FIREWALL=true
+            shift
+            ;;
+        --apply-all)
+            APPLY_ALL=true
             shift
             ;;
         --log-level)
@@ -105,6 +111,7 @@ if [[ "$HARDEN_FIREWALL" == false ]]; then
     fi
 fi
 export HARDEN_FIREWALL
+export APPLY_ALL
 
 # Live mode confirmation
 if [[ "$DRY_RUN" == false ]]; then

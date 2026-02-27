@@ -183,7 +183,8 @@
       "file": "/etc/audit/auditd.conf",
       "directive": "admin_space_left_action",
       "expected": "halt",
-      "separator": " = "
+      "separator": " = ",
+      "audit_only": true
     },
     {
       "id": "6.3.3.1",

@@ -10,14 +10,6 @@
       "reason": "Bootloader password — no physical/console access on EC2"
     },
     {
-      "id": "3.1.1",
-      "reason": "Wireless interfaces — no hardware on EC2"
-    },
-    {
-      "id": "3.1.2",
-      "reason": "Bluetooth — no hardware on EC2"
-    },
-    {
       "id": "1.8.1",
       "reason": "GDM — headless EC2 servers"
     },
@@ -56,13 +48,51 @@
     {
       "id": "1.8.10",
       "reason": "GDM — headless EC2 servers"
+    },
+    {
+      "id": "2.1.9",
+      "reason": "NFS server — required for EFS mounts on EC2"
+    },
+    {
+      "id": "2.1.12",
+      "reason": "rpcbind — required for EFS/NFS on EC2"
+    },
+    {
+      "id": "3.1.1",
+      "reason": "Wireless interfaces — no hardware on EC2"
+    },
+    {
+      "id": "3.1.2",
+      "reason": "Bluetooth — no hardware on EC2"
+    },
+    {
+      "id": "3.3.11a",
+      "reason": "IPv6 router advertisements — required for EC2 dual-stack/IPv6 networking"
+    },
+    {
+      "id": "3.3.11b",
+      "reason": "IPv6 router advertisements — required for EC2 dual-stack/IPv6 networking"
+    },
+    {
+      "id": "5.2.4",
+      "reason": "NOPASSWD sudo — ec2-user/ubuntu default sudo requires NOPASSWD for cloud-init and SSM"
     }
   ],
   "modify": {
-    "5.1.5": {
+    "5.1.21": {
       "field": "expected",
       "value": "prohibit-password",
       "reason": "SSH root login with key-based auth OK on EC2 (no password auth)"
+    },
+    "5.4.4": {
+      "field": "expected",
+      "value": "INACTIVE=180",
+      "reason": "Extended to 180 days — EC2 automation accounts may not have interactive logins for months"
+    },
+    "6.3.2.5": {
+      "field": "expected",
+      "value": "suspend",
+      "reason": "suspend instead of halt — halting an EC2 instance on full audit logs is a self-inflicted DOS"
     }
   }
 }

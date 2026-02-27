@@ -35,7 +35,8 @@
       "title": "Ensure sshd access is configured",
       "type": "command",
       "audit_cmd": "sshd -T 2>/dev/null | grep -Ei '^\\s*(allow|deny)(users|groups)'",
-      "match": "not_empty"
+      "match": "not_empty",
+      "audit_only": true
     },
     {
       "id": "5.1.5",
@@ -258,7 +259,8 @@
       "type": "pam",
       "check_type": "faillock",
       "directive": "even_deny_root",
-      "expected": ""
+      "expected": "",
+      "audit_only": true
     },
     {
       "id": "5.3.4",
@@ -346,7 +348,8 @@
       "type": "command",
       "audit_cmd": "useradd -D | grep INACTIVE",
       "expected": "INACTIVE=30",
-      "match": "contains"
+      "match": "contains",
+      "audit_only": true
     },
     {
       "id": "5.4.5",
