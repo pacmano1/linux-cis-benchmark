@@ -22,8 +22,8 @@ sudo ./scripts/cis-apply.sh --dry-run false
 
 - **264 controls** across 7 CIS sections
 - **Multi-distro**: RHEL 9 and Ubuntu 24.04 LTS (auto-detected)
-- **AWS-aware**: Auto-detects EC2 instances and applies appropriate exclusions
-- **DryRun by default**: Audit-only mode, safe to run in production
+- **AWS-aware**: Auto-detects EC2, skips 19 controls, modifies 3 for EC2 compatibility
+- **Safe by default**: DryRun mode + 29 dangerous controls are audit-only (never applied without `--apply-all`)
 - **NDJSON result stream**: Machine-parseable output, JSON + HTML reports
 - **Backup/Rollback**: Full state snapshot before live apply
 - **Modular**: Enable/disable sections independently
@@ -59,12 +59,34 @@ sudo ./scripts/cis-apply.sh --dry-run false
 | `--skip-gdm` | Skip GDM desktop controls |
 | `--modules 1,3,5` | Apply specific modules only |
 | `--harden-firewall` | Enable firewall hardening |
+| `--apply-all` | Override audit-only safety controls (see below) |
 
 ### cis-rollback.sh
 | Flag | Description |
 |------|-------------|
 | `--force` | Skip prompts, use most recent backup |
 | `--backup DIR` | Specify backup directory |
+
+## Audit-Only Controls
+
+29 controls are marked **audit-only** — they are reported during both audit and apply, but never actually applied unless you explicitly pass `--apply-all`. This prevents the apply script from:
+
+- **Disabling services** your server intentionally runs (Samba, HTTP, NFS, DNS, DHCP, etc.)
+- **Enabling a firewall** with drop/deny policy and no allow rules (SSH lockout)
+- **Locking out accounts** via PAM faillock on root or inactive password expiration
+- **Halting the system** when audit logs fill up
+
+| Controls | Category | Risk |
+|----------|----------|------|
+| 2.1.1–2.1.21 | Server services (all 21) | Disables services the server may need to run |
+| 4.1.4, 4.1.5 | firewalld enable + drop zone | Drops all traffic including SSH |
+| 4.2.3, 4.2.5 | ufw enable + default deny | Blocks all inbound including SSH |
+| 5.1.4 | sshd AllowUsers/DenyUsers | Misconfigured = SSH lockout |
+| 5.3.3 | PAM faillock even_deny_root | Locks root after 5 bad passwords |
+| 5.4.4 | Inactive password lock (30d) | Locks automation accounts |
+| 6.3.2.5 | auditd halt on full | System halts when audit logs fill disk |
+
+These controls still show Pass/Fail in audit reports — the safety gate only applies during `cis-apply.sh`.
 
 ## Architecture
 
